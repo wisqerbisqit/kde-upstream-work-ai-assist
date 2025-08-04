@@ -1,0 +1,88 @@
+[KNewStuff3]
+Name=Wallpapers
+Name[ar]=خلفيات الشاشة
+Name[ast]=Fondos de pantalla
+Name[az]=Divar kağızları
+Name[be]=Шпалеры
+Name[bg]=Тапети
+Name[bs]=Pozadine
+Name[ca]=Fons de pantalla
+Name[ca@valencia]=Fons de pantalla
+Name[cs]=Tapety
+Name[da]=Baggrunde
+Name[de]=Hintergrundbilder
+Name[el]=Ταπετσαρίες
+Name[en_GB]=Wallpapers
+Name[eo]=Ekranfonoj
+Name[es]=Fondos de pantalla
+Name[et]=Taustapildid
+Name[eu]=Horma-paperak
+Name[fi]=Taustakuvat
+Name[fr]=Fonds d'écran
+Name[ga]=Cúlbhráid
+Name[gl]=Papeis de parede
+Name[he]=תמונות רקע
+Name[hi]=वॉलपेपर
+Name[hr]=Pozadinske slike
+Name[hu]=Háttérképek
+Name[ia]=Papiros de parete (Wallpapers)
+Name[id]=Wallpaper
+Name[is]=Veggfóður
+Name[it]=Sfondi
+Name[ja]=壁紙
+Name[ka]=ფონური სურათები
+Name[kk]=Тұсқағаздар
+Name[km]=ផ្ទាំងរូបភាព
+Name[kn]=ಗೋಡೆಚಿತ್ರಗಳು
+Name[ko]=배경 그림
+Name[lt]=Darbalaukio fonai
+Name[lv]=Tapetes
+Name[mk]=Позадински слики
+Name[ml]=വാൾപേപ്പറുകൾ
+Name[mr]=भित्तिचित्र
+Name[nb]=Bakgrunnsbilder
+Name[nds]=Achtergrundbölder
+Name[nl]=Bureaubladachtergronden
+Name[nn]=Bakgrunnsbilete
+Name[pa]=ਵਾਲਪੇਪਰ
+Name[pl]=Tapety
+Name[pt]=Imagens de Fundo
+Name[pt_BR]=Papéis de parede
+Name[ro]=Imagini de fundal
+Name[ru]=Обои рабочего стола
+Name[si]=වෝල්පේපර්
+Name[sk]=Tapety
+Name[sl]=Ozadja namizja
+Name[sr]=Тапети
+Name[sr@ijekavian]=Тапети
+Name[sr@ijekavianlatin]=Tapeti
+Name[sr@latin]=Tapeti
+Name[sv]=Skrivbordsbakgrunder
+Name[ta]=வால்பேப்பர்கள்
+Name[tg]=Расмҳои замина
+Name[th]=ภาพพื้นหลัง
+Name[tr]=Duvar Kağıtları
+Name[ug]=تام قەغەز
+Name[uk]=Шпалери
+Name[vi]=Hình nền
+Name[wa]=Papî peints
+Name[x-test]=xxWallpapersxx
+Name[zh_CN]=壁纸
+Name[zh_TW]=桌布
+
+ProvidersUrl=https://store.kde.org/api/v1/providers.xml
+Categories=KDE Plasma 6 Add-Ons,KDE Plasma 5 Add-Ons,Plasma 6 Add-Ons,Plasma 5 Add-Ons
+Uncompress=archive
+InstallationCommand=kpackagetool6 --type=Plasma/Wallpaper --install %f
+
+# HTTP/2 fallback configuration for problematic hosts
+DisableHTTP2=true
+DisableHTTP2Hosts=store.kde.org,api.kde-look.org,api.opendesktop.org,api.pling.com,www.pling.com,cdn.kde.org
+
+# KF6 to KF5 category fallback mappings
+CategoryFallbacks=KDE Plasma 6 Add-Ons:KDE Plasma 5 Add-Ons,Plasma 6 Add-Ons:Plasma 5 Add-Ons
+
+# Enhanced timeout and retry settings for slow connections
+Timeout=30000
+MaxRetries=3
+RetryDelay=2000

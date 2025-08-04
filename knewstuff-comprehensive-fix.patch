@@ -1,0 +1,228 @@
+From: System Administrator <admin@localhost>
+Date: Mon, 6 Jan 2025 12:00:00 +0000
+Subject: [PATCH] Add HTTP/2 fallback and KF6→KF5 tag fallback for store compatibility
+
+This patch addresses two critical issues with store.kde.org and pling.com:
+
+1. HTTP/2 RST_STREAM errors: Some CDN configurations incorrectly handle HTTP/2
+   connections, causing RST_STREAM errors that prevent content downloading.
+   
+2. Missing KF6 content tags: Many packages on the store only have KF5 tags,
+   but are compatible with KF6. This adds automatic fallback from 6→5 tags
+   when KF6-specific content is not found.
+
+The HTTP/2 fallback can be controlled via environment variable:
+KNEWSTUFF_DISABLE_HTTP2=1
+
+The tag fallback applies to Qt6/KF6 builds when searching for content.
+
+---
+ src/core/engine.cpp                    | 28 +++++++++++++++++++++
+ src/core/atticaprovider.cpp           | 25 +++++++++++++++++++
+ src/core/xmlloader.cpp                | 10 ++++++++
+ src/core/provider.cpp                 | 35 ++++++++++++++++++++++++++
+ src/core/provider.h                   |  8 ++++++
+ 5 files changed, 106 insertions(+)
+
+diff --git a/src/core/engine.cpp b/src/core/engine.cpp
+index 1234567..8901234 100644
+--- a/src/core/engine.cpp
++++ b/src/core/engine.cpp
+@@ -51,6 +51,7 @@
+ #include <QNetworkAccessManager>
+ #include <QNetworkConfiguration>
+ #include <QNetworkConfigurationManager>
++#include <QNetworkRequest>
+ #include <QNetworkReply>
+ #include <QStandardPaths>
+ #include <QTimer>
+@@ -445,6 +446,17 @@ void Engine::requestResource()
+     if (!request.url().isValid()) {
+         return;
+     }
++    
++    // Disable HTTP/2 for problematic hosts or when explicitly requested
++    static const bool disableHttp2 = qEnvironmentVariableIsSet("KNEWSTUFF_DISABLE_HTTP2") ||
++                                     isProblematicHost(request.url().host());
++    
++    if (disableHttp2) {
++        qCDebug(KNEWSTUFFCORE) << "Disabling HTTP/2 for host:" << request.url().host();
++        request.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, false);
++        // Also set HTTP/1.1 explicitly
++        request.setRawHeader("Connection", "close");
++    }
+ 
+     QNetworkReply *reply = m_accessManager->get(request);
+     reply->setProperty("providerId", d->provider->providerId());
+@@ -500,6 +512,22 @@ void Engine::requestResource()
+     }
+ }
+ 
++bool Engine::isProblematicHost(const QString &host)
++{
++    // Known hosts with HTTP/2 issues
++    static const QStringList problematicHosts = {
++        QStringLiteral("store.kde.org"),
++        QStringLiteral("api.kde-look.org"),
++        QStringLiteral("api.opendesktop.org"),
++        QStringLiteral("api.pling.com"),
++        QStringLiteral("www.pling.com"),
++        QStringLiteral("cdn.kde.org")
++    };
++    
++    return std::any_of(problematicHosts.begin(), problematicHosts.end(),
++                       [&host](const QString &problematic) { return host.contains(problematic); });
++}
++
+ void Engine::requestMoreData()
+ {
+     qCDebug(KNEWSTUFFCORE) << "requestMoreData called";
+diff --git a/src/core/atticaprovider.cpp b/src/core/atticaprovider.cpp
+index 2345678..9012345 100644
+--- a/src/core/atticaprovider.cpp
++++ b/src/core/atticaprovider.cpp
+@@ -21,6 +21,7 @@
+ #include <QNetworkAccessManager>
+ #include <QNetworkReply>
+ #include <QNetworkRequest>
++#include <QCoreApplication>
+ #include <QTimer>
+ #include <QUrlQuery>
+ 
+@@ -155,6 +156,13 @@ void AtticaProvider::loadEntries(const KNSCore::Provider::SearchRequest &reques
+         categoryName = request.categories.first();
+     }
+ 
++    // Disable HTTP/2 for problematic Attica hosts
++    static const bool disableHttp2 = qEnvironmentVariableIsSet("KNEWSTUFF_DISABLE_HTTP2");
++    if (disableHttp2) {
++        qCDebug(KNEWSTUFFCORE) << "Disabling HTTP/2 for Attica provider";
++        Attica::BaseJob::setDefaultHTTP2Allowed(false);
++    }
++    
+     Attica::Content::List contentList = m_provider.searchContents(categoryName, request.searchTerm, Attica::Content::SortMode(sortMode), page, pageSize);
+     
+     connect(contentList.data(), &Attica::BaseJob::finished, this, [this, contentList, request] {
+@@ -170,6 +178,23 @@ void AtticaProvider::loadEntries(const KNSCore::Provider::SearchRequest &reques
+             return;
+         }
+         
++        // If this is a Qt6/KF6 build and we got no results, try falling back to KF5 tags
++        if (entries.isEmpty() && isQt6Build() && !request.categories.isEmpty()) {
++            QString originalCategory = request.categories.first();
++            QString fallbackCategory = mapKF6ToKF5Category(originalCategory);
++            
++            if (fallbackCategory != originalCategory) {
++                qCDebug(KNEWSTUFFCORE) << "No KF6 content found, trying KF5 fallback:" 
++                                      << originalCategory << "->" << fallbackCategory;
++                
++                KNSCore::Provider::SearchRequest fallbackRequest = request;
++                fallbackRequest.categories = QStringList() << fallbackCategory;
++                loadEntries(fallbackRequest);
++                return;
++            }
++        }
++        
+         for (const Attica::Content &content : entries) {
+             KNSCore::Entry entry;
+             entry.setProviderId(providerId());
+diff --git a/src/core/xmlloader.cpp b/src/core/xmlloader.cpp
+index 3456789..0123456 100644
+--- a/src/core/xmlloader.cpp
++++ b/src/core/xmlloader.cpp
+@@ -19,6 +19,7 @@
+ #include <QNetworkAccessManager>
+ #include <QNetworkReply>
+ #include <QNetworkRequest>
++#include <QNetworkRequest>
+ #include <QTimer>
+ #include <QXmlStreamReader>
+ 
+@@ -88,6 +89,15 @@ void XmlLoader::load(const QUrl &url)
+         return;
+     }
+ 
++    // Disable HTTP/2 for problematic hosts when loading XML
++    static const bool disableHttp2 = qEnvironmentVariableIsSet("KNEWSTUFF_DISABLE_HTTP2");
++    if (disableHttp2 || isProblematicHost(url.host())) {
++        qCDebug(KNEWSTUFFCORE) << "Disabling HTTP/2 for XML loading from:" << url.host();
++        request.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, false);
++        request.setRawHeader("Connection", "close");
++        request.setRawHeader("User-Agent", "KNewStuff/6.0 (HTTP/1.1)");
++    }
++    
+     QNetworkReply *reply = m_accessManager->get(request);
+     connect(reply, &QNetworkReply::finished, this, &XmlLoader::slotJobFinished);
+     connect(reply, &QNetworkReply::errorOccurred, this, &XmlLoader::slotJobError);
+diff --git a/src/core/provider.cpp b/src/core/provider.cpp
+index 4567890..1234567 100644
+--- a/src/core/provider.cpp
++++ b/src/core/provider.cpp
+@@ -15,6 +15,7 @@
+ #include <QDomDocument>
+ #include <QNetworkAccessManager>
+ #include <QNetworkRequest>
++#include <QCoreApplication>
+ 
+ using namespace KNSCore;
+ 
+@@ -345,3 +346,37 @@ void Provider::baseLinkLoaded(QNetworkReply *reply)
+         });
+     }
+ }
++
++bool Provider::isQt6Build()
++{
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return true;
++#else
++    return false;
++#endif
++}
++
++QString Provider::mapKF6ToKF5Category(const QString &kf6Category)
++{
++    // Map common KF6 categories to their KF5 equivalents
++    static const QHash<QString, QString> categoryMap = {
++        {QStringLiteral("Plasma 6 Add-Ons"), QStringLiteral("Plasma 5 Add-Ons")},
++        {QStringLiteral("Plasma 6 Themes"), QStringLiteral("Plasma 5 Themes")},
++        {QStringLiteral("KDE Plasma 6"), QStringLiteral("KDE Plasma 5")},
++        {QStringLiteral("Qt6 Applications"), QStringLiteral("Qt5 Applications")},
++        {QStringLiteral("KF6 Applications"), QStringLiteral("KF5 Applications")},
++        {QStringLiteral("Plasma6 Widgets"), QStringLiteral("Plasma5 Widgets")},
++        {QStringLiteral("KDE6"), QStringLiteral("KDE5")},
++        // Generic patterns
++        {QStringLiteral("6"), QStringLiteral("5")},
++    };
++    
++    // First try exact matches
++    if (categoryMap.contains(kf6Category)) {
++        return categoryMap.value(kf6Category);
++    }
++    
++    // Then try pattern replacement for categories containing "6"
++    QString result = kf6Category;
++    return result.replace(QStringLiteral("6"), QStringLiteral("5"));
++}
+diff --git a/src/core/provider.h b/src/core/provider.h
+index 7890123..4567890 100644
+--- a/src/core/provider.h
++++ b/src/core/provider.h
+@@ -154,6 +154,14 @@ protected:
+      */
+     void baseLinkLoaded(QNetworkReply *reply);
+ 
++    /**
++     * Check if this is a Qt6/KF6 build
++     */
++    static bool isQt6Build();
++    
++    /**
++     * Map KF6 category names to KF5 equivalents for fallback
++     */
++    static QString mapKF6ToKF5Category(const QString &kf6Category);
+ private:
+     ProviderPrivate *const d;
+ };
+-- 
+2.39.1

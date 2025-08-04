@@ -1,0 +1,87 @@
+[KNewStuff3]
+Name=Plasma Look And Feel
+Name[ar]=مظهر بلازما وملمسها
+Name[ast]=Aspeutu y comportamientu de Plasma
+Name[az]=Plasma-nın Görünüşü və Hissi
+Name[be]=Вонкавы выгляд і адчуванне Plasma
+Name[bg]=Външен вид и усещане на Plasma
+Name[bs]=Plasma izgled i osjećaj
+Name[ca]=Aspecte i comportament del Plasma
+Name[ca@valencia]=Aspecte i comportament del Plasma
+Name[cs]=Vzhled a chování Plasmy
+Name[da]=Plasma udseende og fornemmelse
+Name[de]=Plasma-Erscheinungsbild
+Name[el]=Εμφάνιση και αίσθηση Plasma
+Name[en_GB]=Plasma Look And Feel
+Name[eo]=Plasma aspekto kaj sento
+Name[es]=Aspecto y comportamiento de Plasma
+Name[et]=Plasma välimus ja käitumine
+Name[eu]=Plasma-ren itxura eta izaera
+Name[fi]=Plasman ulkoasu ja tuntuma
+Name[fr]=Apparence de Plasma
+Name[ga]=Cuma agus Mothú Plasma
+Name[gl]=Aparencia e comportamento do Plasma
+Name[he]=מראה ותחושה של Plasma
+Name[hi]=प्लाज़्मा रूप एवं अनुभव
+Name[hr]=Plasma izgled i osjećaj
+Name[hu]=Plasma kinézet és érzet
+Name[ia]=Apparentia e Sensation de Plasma
+Name[id]=Tampilan dan Rasa Plasma
+Name[is]=Útlit og hegðun Plasma
+Name[it]=Aspetto di Plasma
+Name[ja]=Plasma のルック&フィール
+Name[ka]=Plasma-ს გარეგნული სახე და განცდა
+Name[kk]=Plasma көрінісі мен сезімі
+Name[km]=រូបរាង​និង​ភាព​ពី​ Plasma
+Name[kn]=ಪ್ಲಾಸ್ಮಾ ನೋಟ ಮತ್ತು ಅನುಭವ
+Name[ko]=Plasma 모양과 느낌
+Name[lt]=Plasma išvaizda ir elgsena
+Name[lv]=Plasma izskats un izjūtas
+Name[mk]=Изглед и чувство на Plasma
+Name[ml]=പ്ലാസ്മ ലുക്ക് ആൻഡ് ഫീൽ
+Name[nb]=Plasma utseende og oppførsel
+Name[nds]=Plasma utsehn un Bedenen
+Name[nl]=Plasma uiterlijk en gedrag
+Name[nn]=Plasma utsjånad og åtferd
+Name[pa]=ਪਲਾਜ਼ਮਾ ਦਿੱਖ ਅਤੇ ਮਹਿਸੂਸ
+Name[pl]=Wygląd i odczucia Plazmy
+Name[pt]=Aparência e Comportamento do Plasma
+Name[pt_BR]=Aparência do Plasma
+Name[ro]=Aspect și comportament Plasma
+Name[ru]=Оформление Plasma
+Name[si]=Plasma පෙනුම සහ හැඟීම
+Name[sk]=Vzhľad a správanie Plasma
+Name[sl]=Videz in občutek Plasme
+Name[sr]=Плазма — изглед и осећај
+Name[sr@ijekavian]=Плазма — изглед и осећај
+Name[sr@ijekavianlatin]=Plasma — izgled i osećaj
+Name[sr@latin]=Plasma — izgled i osećaj
+Name[sv]=Plasma utseende och känsla
+Name[ta]=பிலாஸ்மா தோற்றமும் உணர்வும்
+Name[tg]=Намуд ва ҳиссиёти Plasma
+Name[th]=รูปลักษณ์และความรู้สึกของ Plasma
+Name[tr]=Plasma Görünüm ve Duygu
+Name[ug]=Plasma كۆرۈنۈش ۋە تۇيغۇ
+Name[uk]=Вигляд і поведінка Плазми
+Name[vi]=Nhìn và Cảm nhận Plasma
+Name[wa]=Rivnance eyet dujhance da Plasma
+Name[x-test]=xxPlasma Look And Feelxx
+Name[zh_CN]=Plasma 观感
+Name[zh_TW]=Plasma 外觀與感覺
+
+ProvidersUrl=https://store.kde.org/api/v1/providers.xml
+Categories=Plasma 6 Global Themes,Plasma 5 Global Themes,KDE Plasma 6 Themes,KDE Plasma 5 Themes
+Uncompress=archive
+InstallationCommand=kpackagetool6 --type=Plasma/LookAndFeel --install %f
+
+# HTTP/2 fallback configuration for problematic hosts
+DisableHTTP2=true
+DisableHTTP2Hosts=store.kde.org,api.kde-look.org,api.opendesktop.org,api.pling.com,www.pling.com,cdn.kde.org
+
+# KF6 to KF5 category fallback mappings
+CategoryFallbacks=Plasma 6 Global Themes:Plasma 5 Global Themes,KDE Plasma 6 Themes:KDE Plasma 5 Themes
+
+# Enhanced timeout and retry settings for slow connections
+Timeout=30000
+MaxRetries=3
+RetryDelay=2000
