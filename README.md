@@ -1,6 +1,6 @@
 # KDE Upstream Work - HTTP/2 Compatibility Fix
 
-This repository contains a comprehensive submission package addressing HTTP/2 compatibility issues affecting KDE's "Get Hot New Stuff" (KNewStuff) framework, particularly with store.kde.org and related content delivery services.
+This repository contains files needed to address HTTP/2 compatibility issues affecting KDE's "Get Hot New Stuff" (KNewStuff) framework, particularly with store.kde.org and related content delivery services.
 
 ## Problem Overview
 
@@ -37,7 +37,7 @@ This package provides multiple approaches to resolve the HTTP/2 compatibility is
 
 ### Important Notice
 
-Parts of the technical analysis, proposed solutions, patches and documentation were generated with the assistance of AI-based tooling (OpenAI GPT-4) under human review. All content has been verified and curated by human maintainers.
+Most of the technical analysis, proposed solutions, patches, and documentation were generated with the assistance of AI-based tooling (OpenAI GPT-4) under human review. All content has been verified and curated by human maintainers.
 
 This project demonstrates transparent collaboration between human expertise and AI assistance in open-source development.
 
@@ -67,7 +67,7 @@ This project demonstrates transparent collaboration between human expertise and 
 
 ### For KDE Developers
 
-1. Review `submission-summary.md` for complete submission strategy
+1. Review `submission-summary.md` for the complete submission strategy
 2. Apply `knewstuff-comprehensive-fix.patch` to KNewStuff repository
 3. Update .knsrc files in plasma-desktop repository
 4. Submit merge requests with references to this documentation
@@ -93,7 +93,7 @@ This project demonstrates transparent collaboration between human expertise and 
 
 ### Root Cause Analysis
 
-- Store.kde.org CDN sends RST_STREAM frames for HTTP/2 connections
+- Store.kde.org CDN sends RST_STREAM frames for HTTP/2 connections64
 - Qt applications fail with `QNetworkReply::NetworkError(ProtocolFailure)`
 - HTTP/1.1 connections work correctly as fallback
 
