@@ -1,4 +1,4 @@
-# KDE Upstream Work - HTTP/2 Compatibility Fix
+# KDE Theme Access Issue - HTTP/2 Compatibility Fix
 
 This repository contains files needed to address HTTP/2 compatibility issues affecting KDE's "Get Hot New Stuff" (KNewStuff) framework, particularly with store.kde.org and related content delivery services.
 
