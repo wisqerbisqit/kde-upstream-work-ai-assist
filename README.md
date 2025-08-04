@@ -145,9 +145,10 @@ While this is a specific submission package, feedback on the approach and docume
 
 ## License
 
-This submission package is provided under the same licenses as the target KDE projects:
-- Code patches: GPL-2.0+ (following KNewStuff licensing)
-- Documentation: CC-BY-SA-4.0 (following KDE documentation standards)
+This project is released into the public domain under [The Unlicense](https://unlicense.org).
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software and documentation, either in source form or as compiled binaries, for any purpose, commercial or non-commercial, and by any means.
+This dedication to the public domain is particularly appropriate given the AI-assisted nature of much of the content, no copyright is claimed or intended.
+See the [LICENSE](LICENSE) file for the complete legal text.
 
 ## Contact
 
